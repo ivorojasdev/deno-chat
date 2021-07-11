@@ -6,15 +6,43 @@ interface Message {
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
+  const [text, setText] = useState("");
 
   const getMessages = useCallback(async () => {
-    const res = await fetch(`https://ivo-deno-chat-api-f72d913a.deno.dev/`);
+    const res = await fetch(
+      `https://ivo-deno-chat-api-444e00f0.deno.dev/messages`
+    );
     const data = await res.json();
     setMessages(data);
   }, []);
 
   useEffect(() => {
     getMessages();
-  });
-  return <div>{JSON.stringify(messages)}</div>;
+  }, []);
+
+  const onSendMessage = useCallback(async () => {
+    await fetch(`https://ivo-deno-chat-api-444e00f0.deno.dev/messages`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        text,
+      }),
+    });
+    setText("");
+    getMessages();
+  }, [text]);
+
+  return (
+    <div>
+      <div>{JSON.stringify(messages)}</div>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+      />
+      <button onClick={onSendMessage}>Add</button>
+    </div>
+  );
 }

@@ -2,6 +2,11 @@ import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 import {oakCors} from 'https://deno.land/x/cors/mod.ts';
 
 const messages = [];
+const channel = new BroadcastChannel("earth");
+channel.onmessage = (event) => {
+  messages.push(event.data);
+};
+
 
 const router = new Router();
 router
